@@ -284,7 +284,7 @@ class ErrorTest(APITest):
         with self.assertRaises(TypeError):
             self.congress.bills.introduced('N000032')
 
-    def test_get_offset_non_positive_page(self):
+    def test_non_positive_page(self):
         # this takes a positive page number
         with self.assertRaises(CongressError):
             self.congress.bills.introduced('house', page=0)
