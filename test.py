@@ -12,9 +12,6 @@ import httplib2
 
 from congress import Congress
 from congress.utils import CongressError, NotFound, get_congress, u
-from dotenv import load_dotenv
-
-load_dotenv()
 
 API_KEY = os.environ['PROPUBLICA_API_KEY']
 LOG_LEVEL = getattr(logging, os.environ.get('CONGRESS_LOG_LEVEL', 'INFO').upper(), logging.INFO)
