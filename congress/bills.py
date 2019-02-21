@@ -1,5 +1,5 @@
 from .client import Client
-from .utils import CURRENT_CONGRESS, check_chamber
+from .utils import CURRENT_CONGRESS, check_chamber, get_offset
 
 
 class BillsClient(Client):
@@ -36,34 +36,39 @@ class BillsClient(Client):
     def cosponsors(self, bill_id, congress=CURRENT_CONGRESS):
         return self.get(bill_id, congress, 'cosponsors')
 
-    def recent(self, chamber, congress=CURRENT_CONGRESS, type='introduced'):
+    def recent(self, chamber, page=1, congress=CURRENT_CONGRESS, type='introduced'):
         """
         Takes a chamber, Congress, and type:
         (introduced|updated)
         Returns a list of recent bills
         """
         check_chamber(chamber)
-        path = "{congress}/{chamber}/bills/{type}.json".format(
-            congress=congress, chamber=chamber, type=type)
+        offset = get_offset(page)
+        path = "{congress}/{chamber}/bills/{type}.json?offset={offset}".format(
+            congress=congress, chamber=chamber, type=type, offset=offset)
         return self.fetch(path)
 
-    def introduced(self, chamber, congress=CURRENT_CONGRESS):
-        "Shortcut for getting introduced bills"
-        return self.recent(chamber, congress, 'introduced')
+    def introduced(self, chamber, page=1, congress=CURRENT_CONGRESS):
+        """Shortcut for getting introduced bills"""
+        return self.recent(chamber, page, congress, 'introduced')
 
-    def updated(self, chamber, congress=CURRENT_CONGRESS):
-        "Shortcut for getting updated bills"
-        return self.recent(chamber, congress, 'updated')
+    def updated(self, chamber, page=1, congress=CURRENT_CONGRESS):
+        """Shortcut for getting updated bills"""
+        return self.recent(chamber, page, congress, 'updated')
 
-    def passed(self, chamber, congress=CURRENT_CONGRESS):
-        "Shortcut for passed bills"
-        return self.recent(chamber, congress, 'passed')
+    def passed(self, chamber, page=1, congress=CURRENT_CONGRESS):
+        """Shortcut for passed bills"""
+        return self.recent(chamber, page, congress, 'passed')
 
-    def major(self, chamber, congress=CURRENT_CONGRESS):
-        "Shortcut for major bills"
-        return self.recent(chamber, congress, 'major')
+    def enacted(self, chamber, page=1, congress=CURRENT_CONGRESS):
+        """Shortcut for enacted bills"""
+        return self.recent(chamber, page, congress, 'enacted')
+
+    def vetoed(self, chamber, page=1, congress=CURRENT_CONGRESS):
+        """Shortcut for vetoed bills"""
+        return self.recent(chamber, page, congress, 'vetoed')
 
     def upcoming(self, chamber, congress=CURRENT_CONGRESS):
-        "Shortcut for upcoming bills"
+        """Shortcut for upcoming bills"""
         path = "bills/upcoming/{chamber}.json".format(chamber=chamber)
         return self.fetch(path)

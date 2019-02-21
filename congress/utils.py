@@ -61,5 +61,9 @@ def u(text, encoding='utf-8'):
     text = text.replace('\r\n', '\n')
     return text
 
+def get_offset(page):
+    if page < 1:
+        raise CongressError('Page number must be at least 1.')
+    return (page - 1) * 20
 
 CURRENT_CONGRESS = get_congress(datetime.datetime.now().year)
