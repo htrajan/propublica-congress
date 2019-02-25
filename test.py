@@ -65,7 +65,7 @@ class MemberTest(APITest):
         states = [
             ('RI', 2),
             ('AL', 7),
-            ('AZ', 8),
+            ('AZ', 9),
         ]
 
         for state, count in states:
@@ -99,6 +99,61 @@ class BillTest(APITest):
         latest = self.congress.bills.recent(chamber='house', congress=114, type='introduced')
         url = "https://api.propublica.org/congress/v1/114/house/bills/introduced.json"
         self.check_response(latest, url)
+
+    def test_recent_bills_paginated(self):
+        latest = self.congress.bills.recent(chamber='house', page=3, congress=114, type='introduced')
+        url = "https://api.propublica.org/congress/v1/114/house/bills/introduced.json?offset=40"
+        self.check_response(latest, url)
+
+    def test_introduced_bills(self):
+        introduced = self.congress.bills.introduced(chamber='house', congress=114)
+        url = "https://api.propublica.org/congress/v1/114/house/bills/introduced.json"
+        self.check_response(introduced, url)
+        
+    def test_introduced_bills_paginated(self):
+        introduced = self.congress.bills.introduced(chamber='house', page=2, congress=114)
+        url = "https://api.propublica.org/congress/v1/114/house/bills/introduced.json?offset=20"
+        self.check_response(introduced, url)
+
+    def test_updated_bills(self):
+        updated = self.congress.bills.updated(chamber='house', congress=114)
+        url = "https://api.propublica.org/congress/v1/114/house/bills/updated.json"
+        self.check_response(updated, url)
+
+    def test_updated_bills_paginated(self):
+        updated = self.congress.bills.updated(chamber='house', page=2, congress=114)
+        url = "https://api.propublica.org/congress/v1/114/house/bills/updated.json?offset=20"
+        self.check_response(updated, url)
+
+    def test_passed_bills(self):
+        passed = self.congress.bills.passed(chamber='house', congress=114)
+        url = "https://api.propublica.org/congress/v1/114/house/bills/passed.json"
+        self.check_response(passed, url)
+
+    def test_passed_bills_paginated(self):
+        passed = self.congress.bills.passed(chamber='house', page=2, congress=114)
+        url = "https://api.propublica.org/congress/v1/114/house/bills/passed.json?offset=20"
+        self.check_response(passed, url)
+
+    def test_enacted_bills(self):
+        enacted = self.congress.bills.enacted(chamber='house', congress=114)
+        url = "https://api.propublica.org/congress/v1/114/house/bills/enacted.json"
+        self.check_response(enacted, url)
+
+    def test_enacted_bills_paginated(self):
+        enacted = self.congress.bills.enacted(chamber='house', page=2, congress=114)
+        url = "https://api.propublica.org/congress/v1/114/house/bills/enacted.json?offset=20"
+        self.check_response(enacted, url)
+
+    def test_vetoed_bills(self):
+        vetoed = self.congress.bills.vetoed(chamber='house', congress=114)
+        url = "https://api.propublica.org/congress/v1/114/house/bills/vetoed.json"
+        self.check_response(vetoed, url)
+
+    def test_vetoed_bills_paginated(self):
+        vetoed = self.congress.bills.vetoed(chamber='house', page=2, congress=114)
+        url = "https://api.propublica.org/congress/v1/114/house/bills/vetoed.json?offset=20"
+        self.check_response(vetoed, url)
     
     def test_bills_by_member(self):
         bills = self.congress.bills.by_member('L000287', 'introduced')
@@ -228,6 +283,13 @@ class ErrorTest(APITest):
         # this takes a chamber argument, not a member_id
         with self.assertRaises(TypeError):
             self.congress.bills.introduced('N000032')
+
+    def test_non_positive_page(self):
+        # this takes a positive page number
+        with self.assertRaises(CongressError):
+            self.congress.bills.introduced('house', page=0)
+        with self.assertRaises(CongressError):
+            self.congress.bills.introduced('house', page=-1)
     
     def test_404(self):
         # the API returns a 404 for members not found
