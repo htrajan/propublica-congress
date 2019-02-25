@@ -15,3 +15,9 @@ class CommitteesClient(Client):
         path = "{congress}/{chamber}/committees/{committee}.json".format(
             congress=congress, chamber=chamber, committee=committee)
         return self.fetch(path)
+
+    def get_subcommittee(self, chamber, committee, subcommittee, congress=CURRENT_CONGRESS):
+        check_chamber(chamber)
+        path = "{congress}/{chamber}/committees/{committee}/subcommittees/{subcommittee}.json".format(
+            congress=congress, chamber=chamber, committee=committee, subcommittee=subcommittee)
+        return self.fetch(path)
